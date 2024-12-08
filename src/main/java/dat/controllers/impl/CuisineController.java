@@ -1,5 +1,6 @@
 package dat.controllers.impl;
 
+import dat.config.HibernateConfig;
 import dat.controllers.IController;
 import dat.daos.CuisineDao;
 import dat.dtos.CuisineDTO;
@@ -9,6 +10,7 @@ import dat.entities.Spice;
 import dat.security.exceptions.ApiException;
 import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
+import jakarta.persistence.EntityManagerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,10 +26,17 @@ public class CuisineController implements IController<CuisineDTO, Integer> {
     private final Logger log = LoggerFactory.getLogger(CuisineController.class);
     private CuisineDao cuisineDao;
 
+    public CuisineController(CuisineDao cuisineDao) {
+        this.cuisineDao = cuisineDao;
+    }
+
+    public CuisineController() {
+    }
+
     @Override
     public void read(Context ctx) {
         try {
-            int id = ctx.pathParamAsClass("id", Integer.class).get();
+            Long id = ctx.pathParamAsClass("id", Long.class).get();
 
             CuisineDTO cuisineDTO = cuisineDao.read(id);
             ctx.res().setStatus(200);
@@ -36,6 +45,11 @@ public class CuisineController implements IController<CuisineDTO, Integer> {
             log.error("400{}",e.getMessage());
             throw new ApiException(400, e.getMessage());
         }
+
+    }
+
+    @Override
+    public void readByName(Context ctx) {
 
     }
 
@@ -75,7 +89,7 @@ public class CuisineController implements IController<CuisineDTO, Integer> {
             CuisineDTO cuisineDTO = ctx.bodyAsClass(CuisineDTO.class);
 
             // == querying ==
-            int cuisineId = ctx.pathParamAsClass("id", Integer.class).get();
+            Long cuisineId = ctx.pathParamAsClass("id", Long.class).get();
             cuisineDao.update(cuisineId, cuisineDTO);
 
             // == response ==
@@ -89,7 +103,7 @@ public class CuisineController implements IController<CuisineDTO, Integer> {
     @Override
     public void delete(Context ctx) {
         try {
-            int id = ctx.pathParamAsClass("id", Integer.class).get();
+            Long id = ctx.pathParamAsClass("id", Long.class).get();
             // entity
             cuisineDao.delete(id);
             // response

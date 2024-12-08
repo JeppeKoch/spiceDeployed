@@ -37,7 +37,7 @@ public class Cuisine {
     private Set<Favorite> favoriteSet;
 
     @ManyToMany(mappedBy = "cuisineSet", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private Set<Spice> spiceSet; // = new HashSet<>();
+    private Set<Spice> spiceSet = new HashSet<>(); // = new HashSet<>();
 
     public Cuisine(String name, String description, String flavorProfile) {
         this.name = name;
@@ -46,7 +46,6 @@ public class Cuisine {
     }
 
     public Cuisine(CuisineDTO cuisineDTO) {
-        this.id = cuisineDTO.getId();
         this.name = cuisineDTO.getName();
         this.description = cuisineDTO.getDescription();
         this.flavorProfile = cuisineDTO.getFlavorProfile();

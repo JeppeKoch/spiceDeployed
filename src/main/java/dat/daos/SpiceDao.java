@@ -21,10 +21,14 @@ public class SpiceDao {
 
     private static EntityManagerFactory emf;
 
+    public SpiceDao(EntityManagerFactory emf) {
+        this.emf = emf;
+    }
 
-    public SpiceDTO read(Integer integer) {
+
+    public static SpiceDTO read(Long id) {
         try (EntityManager em = emf.createEntityManager()) {
-            Spice spice = em.find(Spice.class, integer);
+            Spice spice = em.find(Spice.class, id);
             return spice != null ? new SpiceDTO(spice) : null;
         }
     }
@@ -36,21 +40,33 @@ public class SpiceDao {
         }
     }
 
+    public SpiceDTO readByName(String name){
+        try (EntityManager em = emf.createEntityManager()) {
+            Spice spice = em.find(Spice.class, name);
+            return spice != null ? new SpiceDTO(spice) : null;
+        }
+    }
+
     public SpiceDTO create(SpiceDTO spiceDTO) {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             Spice spice = new Spice(spiceDTO);
-            em.persist(spice);
+            if (spiceDTO.getName() != null) {
+                spice = em.merge(spice);
+            } else {
+                em.persist(spice);
+            }
+            //em.persist(spice);
             em.getTransaction().commit();
             return new SpiceDTO(spice);
         }
     }
 
 
-    public void delete(Integer integer) {
+    public void delete(Long id) {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
-            Spice spice = em.find(Spice.class, integer);
+            Spice spice = em.find(Spice.class, id);
             if (spice != null){
                 em.remove(spice);
             }
@@ -58,12 +74,14 @@ public class SpiceDao {
         }
     }
 
-    public SpiceDTO update(Integer integer, SpiceDTO spiceDTO) {
+    public SpiceDTO update(Long id, SpiceDTO spiceDTO) {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
 
-            Spice c = em.find(Spice.class, integer);
+            Spice c = em.find(Spice.class,id);
             c.setName(spiceDTO.getName());
+            c.setDescription(spiceDTO.getDescription());
+            c.setFlavorProfile(spiceDTO.getFlavorProfile());
             Spice newspice = em.merge(c);
             em.getTransaction().commit();
             return new SpiceDTO(newspice);

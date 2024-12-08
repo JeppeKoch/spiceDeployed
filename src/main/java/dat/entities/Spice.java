@@ -4,6 +4,7 @@ import dat.dtos.SpiceDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.util.HashSet;
@@ -38,6 +39,7 @@ public class Spice {
     private Set<Cuisine> cuisineSet;
 
     @ManyToMany(mappedBy = "spices", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @EqualsAndHashCode.Exclude
     private Set<Favorite> favorites = new HashSet<>();
 
     public Spice(String name, String description, String flavorProfile) {
@@ -47,7 +49,6 @@ public class Spice {
     }
 
     public Spice(SpiceDTO spiceDTO){
-        this.id = spiceDTO.getId();
         this.name = spiceDTO.getName();
         this.description = spiceDTO.getDescription();
         this.flavorProfile = spiceDTO.getFlavorProfile();

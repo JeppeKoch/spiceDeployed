@@ -3,30 +3,35 @@ package dat.controllers.impl;
 import dat.controllers.IController;
 import dat.daos.SpiceDao;
 import dat.dtos.SpiceDTO;
-import dat.entities.Spice;
 import dat.security.exceptions.ApiException;
 import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
+import jakarta.persistence.EntityManagerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
-import java.util.function.BiFunction;
 
 /**
-*Purpose: 
-* @author: Jeppe Koch
-*/
+ *Purpose:
+ * @author: Jeppe Koch
+ */
 public class SpiceController implements IController<SpiceDTO, Integer> {
 
     private final Logger log = LoggerFactory.getLogger(SpiceController.class);
+    private EntityManagerFactory emf;
     private SpiceDao spiceDao;
+
+
+    public SpiceController(SpiceDao spiceDao) {
+        this.spiceDao = spiceDao;
+    }
 
 
     @Override
     public void read(Context ctx) {
         try {
-            int id = ctx.pathParamAsClass("id", Integer.class).get();
+            Long id = ctx.pathParamAsClass("id", Long.class).get();
 
             SpiceDTO spiceDTO = spiceDao.read(id);
             ctx.res().setStatus(200);
@@ -36,6 +41,19 @@ public class SpiceController implements IController<SpiceDTO, Integer> {
             throw new ApiException(400, e.getMessage());
         }
 
+    }
+    @Override
+    public void readByName(Context ctx) {
+        try {
+            String name = ctx.pathParamAsClass("name", String.class).get();
+
+            SpiceDTO spiceDTO = spiceDao.readByName(name);
+            ctx.res().setStatus(200);
+            ctx.json(spiceDTO, SpiceDTO.class);
+        } catch (Exception e) {
+            log.error("400{}",e.getMessage());
+            throw new ApiException(400, e.getMessage());
+        }
     }
 
     @Override
@@ -70,12 +88,11 @@ public class SpiceController implements IController<SpiceDTO, Integer> {
     @Override
     public void update(Context ctx) {
         try {
-            long id = Long.parseLong(ctx.pathParam("id"));
             SpiceDTO spiceDTO = ctx.bodyAsClass(SpiceDTO.class);
 
             // == querying ==
-            int spiceId = ctx.pathParamAsClass("id", Integer.class).get();
-            spiceDao.update(spiceId, spiceDTO);
+            Long id = ctx.pathParamAsClass("id", long.class).get();
+            spiceDao.update(id, spiceDTO);
 
             // == response ==
             ctx.res().setStatus(200);
@@ -88,7 +105,7 @@ public class SpiceController implements IController<SpiceDTO, Integer> {
     @Override
     public void delete(Context ctx) {
         try {
-            int id = ctx.pathParamAsClass("id", Integer.class).get();
+            Long id = ctx.pathParamAsClass("id", Long.class).get();
             // entity
             spiceDao.delete(id);
             // response

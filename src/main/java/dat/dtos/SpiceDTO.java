@@ -26,10 +26,17 @@ public class SpiceDTO {
     private String description;
 
 
+    public SpiceDTO(String name, String flavorProfile, String description) {
+        this.name = name;
+        this.flavorProfile = flavorProfile;
+        this.description = description;
+    }
+
     public SpiceDTO(Spice spice) {
         this.id = spice.getId();
         this.name = spice.getName();
         this.flavorProfile = spice.getFlavorProfile();
         this.description = spice.getDescription();
     }
+
 }

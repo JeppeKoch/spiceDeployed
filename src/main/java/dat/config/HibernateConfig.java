@@ -2,7 +2,6 @@ package dat.config;
 
 import dat.entities.Cuisine;
 import dat.entities.Favorite;
-import java.util.Properties;
 import dat.entities.Spice;
 import dat.security.entities.Role;
 import dat.security.entities.User;
@@ -12,7 +11,7 @@ import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
 
-;
+import java.util.Properties;
 
 
 public class HibernateConfig {
@@ -20,21 +19,9 @@ public class HibernateConfig {
     private static EntityManagerFactory emfTest;
 
     public static EntityManagerFactory getEntityManagerFactory(String DBName) {
-        if(System.getenv("PRODUCTION") != null) {
-            return setupHibernateConfigurationForProduction();
-        }
-
         if (emf == null)
             emf = createEMF(false, DBName);
         return emf;
-    }
-
-    private static EntityManagerFactory setupHibernateConfigurationForProduction() {
-        Properties props = new Properties();
-        props.put("hibernate.connection.url", System.getenv("JDBC_DATABASE_URL"));
-        props.put("hibernate.connection.username", System.getenv("JDBC_DATABASE_USERNAME"));
-        props.put("hibernate.connection.password", System.getenv("JDBC_DATABASE_PASSWORD"));
-        return new Configuration().addProperties(props).buildSessionFactory();
     }
     // No DBName needed for test-database
     public static EntityManagerFactory getEntityManagerFactoryForTest() {
