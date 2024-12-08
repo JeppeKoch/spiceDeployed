@@ -6,10 +6,7 @@ import dat.security.entities.User;
 import dat.security.exceptions.ApiException;
 import dat.security.exceptions.ValidationException;
 import dk.bugelhartmann.UserDTO;
-import jakarta.persistence.EntityExistsException;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.*;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -74,16 +71,29 @@ public class SecurityDAO implements ISecurityDAO {
             if (user == null)
                 throw new EntityNotFoundException("No user found with username: " + userDTO.getUsername());
             em.getTransaction().begin();
-                Role role = em.find(Role.class, newRole);
-                if (role == null) {
-                    role = new Role(newRole);
-                    em.persist(role);
-                }
-                user.addRole(role);
-                //em.merge(user);
+            Role role = em.find(Role.class, newRole);
+            if (role == null) {
+                role = new Role(newRole);
+                em.persist(role);
+            }
+            user.addRole(role);
+            //em.merge(user);
             em.getTransaction().commit();
             return user;
         }
     }
+
+    public static User getUserFromUsername(String username) {
+        try (EntityManager em = emf.createEntityManager()) {
+            TypedQuery<User> query = em.createQuery("SELECT u FROM User u where u.username=:username", User.class);
+            query.setParameter("username", username);
+            return query.getSingleResult();
+
+        }
+    }
+
+
+
+
 }
 
