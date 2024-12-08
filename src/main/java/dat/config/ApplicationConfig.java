@@ -26,7 +26,7 @@ public class ApplicationConfig {
         config.showJavalinBanner = false;
         config.bundledPlugins.enableRouteOverview("/routes", Role.ANYONE);
         config.router.contextPath = "/api"; // base path for all endpoints
-       // config.router.apiBuilder(routes.getRoutes());
+        config.router.apiBuilder(routes.getRoutes());
         config.router.apiBuilder(SecurityRoutes.getSecuredRoutes());
         config.router.apiBuilder(SecurityRoutes.getSecurityRoutes());
     }
